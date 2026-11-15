@@ -1,0 +1,3 @@
+title = "aftershock secret scan"
+[extend]
+useDefault = true

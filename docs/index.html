@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>aftershock | Volatility clustering</title>
+    <meta
+      name="description"
+      content="Explore the persistence of return magnitudes using daily historical prices, autocorrelation and an order-shuffled comparison."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#lab">Skip to experiment</a>
+    <header>
+      <a class="wordmark" href="./">aftershock</a
+      ><span>Volatility clustering / a daily-data experiment</span
+      ><span id="archive-label" class="archive">Fixed archive · 2007-2017</span>
+    </header>
+    <main id="lab" tabindex="-1">
+      <div class="intro">
+        <p class="eyebrow">Time-series notebook 01</p>
+        <h1>The size of a move can have a memory.</h1>
+        <p>
+          Daily returns may show little linear correlation while their
+          magnitudes persist. Compare the original sequence with the same
+          returns, shuffled into a different order.
+        </p>
+      </div>
+      <div class="controls">
+        <label
+          >Series<select id="asset">
+            <option value="MSFT">Microsoft / MSFT</option>
+            <option value="AAPL">Apple / AAPL</option>
+            <option value="GARCH">Synthetic GARCH control</option>
+          </select></label
+        ><label
+          >Window<select id="period">
+            <option value="all">2007-2017 archive</option>
+            <option value="crisis">2007-2009 archive</option>
+            <option value="later">2013-2017 archive</option>
+          </select></label
+        ><label
+          >ACF horizon<select id="horizon">
+            <option value="20">20 sessions</option>
+            <option value="40">40 sessions</option>
+            <option value="60" selected>60 sessions</option>
+          </select></label
+        ><button id="export" disabled>Export ACF CSV</button>
+      </div>
+      <p id="status" role="status">Loading the local archive...</p>
+      <div class="readouts">
+        <div><span>Daily returns</span><strong id="count">...</strong></div>
+        <div>
+          <span>Signed return / lag 1 ACF</span><strong id="signed">...</strong>
+        </div>
+        <div>
+          <span>Absolute return / lag 1 ACF</span
+          ><strong id="absolute">...</strong>
+        </div>
+        <div>
+          <span>Squared return / lag 1 ACF</span
+          ><strong id="squared">...</strong>
+        </div>
+      </div>
+      <section class="sequence">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">01 / The sequence</p>
+            <h2 id="sequence-title">Daily log returns</h2>
+          </div>
+          <label class="toggle"
+            ><input id="shuffled" type="checkbox" />Show shuffled order</label
+          >
+        </div>
+        <canvas
+          id="returns"
+          role="img"
+          aria-label="Signed daily returns and their trailing twenty-session root mean square"
+        ></canvas>
+        <div class="legend">
+          <span class="blue">│ signed daily log return</span
+          ><span class="orange">─ trailing 20-session RMS</span>
+        </div>
+        <p class="caption" id="sequence-note"></p>
+      </section>
+      <section>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">02 / The ordering contrast</p>
+            <h2>Identical returns. Different order.</h2>
+          </div>
+          <div class="legend">
+            <span class="orange">● original order</span
+            ><span class="blue">○ one seeded shuffle</span>
+          </div>
+        </div>
+        <p class="caption">
+          Autocorrelation (ACF) measures each series against itself, shifted by
+          a number of sessions. All three plots use the same vertical scale. Lag
+          zero is 1 by definition and is omitted.
+        </p>
+        <div class="acf-grid">
+          <div>
+            <h3>Signed returns</h3>
+            <p class="formula">r = log(Pₜ / Pₜ₋₁)</p>
+            <canvas
+              id="acf-signed"
+              role="img"
+              aria-label="Signed-return autocorrelation in original and shuffled order"
+            ></canvas>
+          </div>
+          <div>
+            <h3>Absolute returns</h3>
+            <p class="formula">|r| / magnitude, without direction</p>
+            <canvas
+              id="acf-absolute"
+              role="img"
+              aria-label="Absolute-return autocorrelation in original and shuffled order"
+            ></canvas>
+          </div>
+          <div>
+            <h3>Squared returns</h3>
+            <p class="formula">r² / more weight on large moves</p>
+            <canvas
+              id="acf-squared"
+              role="img"
+              aria-label="Squared-return autocorrelation in original and shuffled order"
+            ></canvas>
+          </div>
+        </div>
+        <div class="inspector">
+          <label for="lag"
+            >Inspect lag <output id="lag-value">1 session</output
+            ><input id="lag" type="range" min="1" max="60" value="1"
+          /></label>
+          <table>
+            <thead>
+              <tr>
+                <th>Transformation</th>
+                <th>Original</th>
+                <th>Shuffled</th>
+              </tr>
+            </thead>
+            <tbody id="lag-table"></tbody>
+          </table>
+        </div>
+        <p class="callout">
+          This is a descriptive contrast, not a significance test. A single
+          shuffle is not a confidence interval. Weak signed-return ACF does not
+          mean returns are independent. Positive magnitude ACF does not prove
+          long memory, predict direction or establish a trading edge.
+        </p>
+      </section>
+      <div class="notes">
+        <section>
+          <h2>What is measured</h2>
+          <p>
+            For each transformation, subtract its full-window mean. At lag k,
+            divide the sum of paired centered products by the sum of all
+            centered squares. This is the standard biased sample ACF, not a
+            rolling regression or pairwise Pearson estimator. Lags count
+            observed sessions, not calendar days.
+          </p>
+          <p>
+            The shuffled sequence is a deterministic Fisher-Yates permutation
+            (seed 991). It preserves every return and its empirical
+            distribution, but not the original order. The orange RMS line is a
+            trailing 20-return root mean square, not a forecast or annualized
+            standard deviation. It starts only after 20 observations.
+          </p>
+        </section>
+        <section>
+          <h2>Where the data stops</h2>
+          <p id="data-note">
+            Split- and dividend-adjusted daily closes from the archived Quandl
+            WIKI dataset. These are old observations, not a live feed. AAPL and
+            MSFT are two selected surviving technology stocks, not a diversified
+            market sample.
+          </p>
+          <p>
+            Finite samples, heavy tails and changes in volatility regimes can
+            affect ACF estimates. A 60-lag picture cannot establish asymptotic
+            long-range dependence. Window selection is exploratory and can
+            change the result. The synthetic control demonstrates a specified
+            model, not an estimated market process.
+          </p>
+        </section>
+        <section>
+          <h2>Reference points</h2>
+          <p>
+            Inspired by Rama Cont's
+            <a href="http://rama.cont.perso.math.cnrs.fr/pdf/FE05.pdf"
+              >Long range dependence in financial markets</a
+            >. See the
+            <a
+              href="https://itl.nist.gov/div898/handbook/eda/section3/eda331.htm"
+              >NIST ACF definition</a
+            >
+            and the
+            <a href="https://www.quandl.com/api/v3/datasets/WIKI/MSFT"
+              >provider's data and reuse statement</a
+            >.
+          </p>
+          <p>
+            Java reference, analytical fixtures and an independent browser port.
+            No machine-learning model, network account, trading, upload or saved
+            visitor data. One same-origin archive request, then all calculations
+            run in this tab.
+          </p>
+        </section>
+      </div>
+      <p id="error" role="alert"></p>
+    </main>
+    <footer>
+      <span>aftershock / historical research illustration</span
+      ><span>MIT OR Apache-2.0</span>
+    </footer>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

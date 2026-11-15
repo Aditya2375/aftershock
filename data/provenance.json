@@ -1,0 +1,17 @@
+{
+  "provider": "Quandl WIKI (archived)",
+  "sourceUrl": "https://github.com/nickola/stock-prices-storage/blob/7a12184c3c70a66a92223c62cd70dd3dff3736b6/_example/quandl-WIKI-AAPL-MSFT.csv",
+  "downloadUrl": "https://raw.githubusercontent.com/nickola/stock-prices-storage/7a12184c3c70a66a92223c62cd70dd3dff3736b6/_example/quandl-WIKI-AAPL-MSFT.csv",
+  "sourceSha256": "2e10452b539936ef339663d437bea2c30d0a4ee45c9ea2310c7eed107b017006",
+  "licenseEvidence": "https://www.quandl.com/api/v3/datasets/WIKI/MSFT",
+  "licenseStatement": "This data is in the public domain. You may copy, distribute, disseminate or include the data in other products for commercial and/or noncommercial purposes.",
+  "basis": "split- and dividend-adjusted close, as supplied by archive",
+  "start": "2007-01-03",
+  "end": "2017-12-29",
+  "observations": 2767,
+  "tickers": [
+    "AAPL",
+    "MSFT"
+  ],
+  "warning": "Historical illustration only. Selected surviving technology stocks, not a diversified benchmark or a recommendation. Dataset is no longer updated."
+}

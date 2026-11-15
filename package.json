@@ -1,0 +1,7 @@
+{
+  "name": "aftershock",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "license": "MIT OR Apache-2.0"
+}
