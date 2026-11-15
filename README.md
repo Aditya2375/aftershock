@@ -1,5 +1,7 @@
 # aftershock
 
+[Open the live experiment](https://aditya2375.github.io/aftershock/)
+
 A volatility-clustering workbench, with an explicit Java reference and a dependency-free browser implementation. Compare autocorrelation of signed, absolute and squared daily log returns against the same observations shuffled into a different order.
 
 ## Explore
